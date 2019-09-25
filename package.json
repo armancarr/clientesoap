@@ -1,6 +1,6 @@
 {
   "name": "clientesoap",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -16,9 +16,10 @@
     "axios": "^0.19.0",
     "dateformat": "^3.0.3",
     "xml-crypto": "^1.4.0",
-    "xmldom": "^0.1.27"
+    "xmldom": "^0.1.27",
+    "formidable": "^1.2.1"
   },
-  "devDependencies":{
-    "@types/request":"^2.48.1"
+  "devDependencies": {
+    "@types/request": "^2.48.1"
   }
 }
