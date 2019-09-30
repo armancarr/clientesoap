@@ -17,7 +17,8 @@
     "dateformat": "^3.0.3",
     "xml-crypto": "^1.4.0",
     "xmldom": "^0.1.27",
-    "formidable": "^1.2.1"
+    "formidable": "^1.2.1",
+    "xpath": "0.0.27"
   },
   "devDependencies": {
     "@types/request": "^2.48.1"
