@@ -152,8 +152,8 @@ class SoapClient {
              sourceReference: {
                  type: "SERVICE",
                  Product: {
-                     type: "type",// TODO: validar que viene en este campo
-                     numer: "numer",// TODO: validar que viene en este campo
+                     type: "",// TODO: validar que viene en este campo
+                     numer: "",// TODO: validar que viene en este campo
                      state: "",// TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
                      detailsProduct: { // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
                          details: "",
@@ -177,8 +177,8 @@ class SoapClient {
                type: "",
                Transfer:{
                  Product:{
-                   type:"type",
-                   numer:"numer",
+                   type:"",
+                   numer:"",
                    state:"", // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
                    detailsProduct:{ // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
                      details:"",
@@ -204,8 +204,8 @@ class SoapClient {
                    type:"",
                    product_payment:"",
                    Product:{
-                      type:"type",
-                      numer:"numer",
+                      type:"",
+                      numer:"",
                       state:"",
                       detailsProduct:{// TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
                         details:"",
