@@ -146,8 +146,8 @@ class SoapClient {
           }
         },
          operation: {
-             type: ctx.operation.type,
-             code: ctx.operation.code,
+             type: ctx.type,
+             code: '', // TODO: validar que viene en este campo
              operationDate: op.date, 
              sourceReference: {
                  type: "SERVICE",
