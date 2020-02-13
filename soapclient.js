@@ -77,7 +77,7 @@ class SoapClient {
              }
             }
             if (shouldLog) {
-              logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode).then(() => {
+              logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
                 resolve(resctx.response)
               })
             } else {
@@ -98,7 +98,7 @@ class SoapClient {
             }
             if (shouldLog) {
               
-              logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode).then(() => {
+              logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
                 reject(resctx.response)
               })
             } else {
@@ -116,20 +116,24 @@ class SoapClient {
       res,
       serviceName,
       loggerEP,
-      statusCode
+      statusCode,
+      statusMessage
     ){
       const logRequest={
-         consumer: {
+        consumer: {
              appConsumer: {
+                 canalId:ctx.appConsumer.canalId,
                  id: ctx.appConsumer.id,
-                 session_id: ctx.appConsumer.sessionId,
-                 transaction_id: ctx.appConsumer.transaccionId
+                 sessionId: ctx.appConsumer.sessionId, 
+                 terminalId: ctx.appConsumer.terminalId,
+                 transactionId: ctx.appConsumer.transaccionId 
             },
              deviceConsumer: {
               id: ctx.deviceConsumer.id,
+              inactiveInterval:ctx.deviceConsumer.inactiveInterval,
               ip: ctx.ipAddress,
               locale: ctx.deviceConsumer.locale,
-              terminalId: ctx.appConsumer.terminalId,
+              sessionTimeout:ctx.deviceConsumer.sessionTimeout,
               userAgent: ctx.deviceConsumer.userAgent,
             },
         },
@@ -137,127 +141,20 @@ class SoapClient {
           numero: ctx.documento.numero,
           tipo: ctx.documento.tipo,
         },
-         messages: {
-           services:serviceName,
-           serviceDetails:{
-            idService: serviceName,
-            requestService: req,
-            responseService: res || 'SIN-DATOS',          
-          }
+        messages: {
+          idService: serviceName, 
+          requestService: req, 
+          responseService: res || 'SIN-DATOS',          
         },
-         operation: {
-             type: ctx.type,
-             code: '', // TODO: validar que viene en este campo
-             operationDate: op.date, 
-             sourceReference: {
-                 type: "SERVICE",
-                 Product: {
-                     type: "",// TODO: validar que viene en este campo
-                     numer: "",// TODO: validar que viene en este campo
-                     state: "",// TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                     detailsProduct: { // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                         details: "",
-                         detail_item: "",
-                         name: "",
-                         value: ""
-                    },
-                     balancesProduct: {// TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                         balances: "",
-                         balance_item: "",
-                         name: "",
-                         value: {
-                          currencyCode:"",
-                          amount:""
-                        }
-                    }
-                },
-                service:{}
-            },
-             destinationReference: {// TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-               type: "",
-               Transfer:{
-                 Product:{
-                   type:"",
-                   numer:"",
-                   state:"", // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                   detailsProduct:{ // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                     details:"",
-                     detail_item:"",
-                     name:"",
-                     value:""
-                  },
-                   balancesProduct:{ // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                     balances:"", 
-                     balance_item:"",
-                     name:"",
-                     value:{ // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                      currencyCode:"",
-                      amount:"",
-                    },
-                 transferProperties:"", // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                 transferProperty:{ // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                  name:"", // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                  value:"", // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                  format:"" // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                },
-                 Payment:{ // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                   type:"",
-                   product_payment:"",
-                   Product:{
-                      type:"",
-                      numer:"",
-                      state:"",
-                      detailsProduct:{// TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                        details:"",
-                        detail_item:"",
-                        name:"",
-                        value:""
-                      },
-                    balancesProduct:{
-                      balances:"",
-                      balance_item:"",
-                      name:"",
-                      value:{
-                        currencyCode:"",
-                        amount:""
-                      }
-                  },
-                   Product_payment_properties:[{ // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                   Product_payment_property:{ // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                    name:"", // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                    value:"",
-                    format:"",
-                   }
-                   }],
-                    Convenio_payment:{ // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                      Code:"",
-                      Payment_references:"",
-                      reference:"",
-                      convenioPaymentProperties:{ // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-                        name:"",
-                        value:"",
-                        format:""
-                    }
-                  }
-                }
-                  }
-                  },
-                   amount:{
-                     currencyCode:"",
-                     amount:""
-                  }
-                }
-              }
+        operation: {
+          operationDate: op.date,
+          statusResponse: {
+            status: op.status,
+            errorDescription:statusMessage,
+            httpError:statusCode,
           },
-           status_response:{
-           status: op.status,
-           approval_number:"", // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-           error:"", // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-           Error_code:"", // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-           Error_http:statusCode, 
-           error_description:"" // TODO: no se tiene, enviar vacio, mientras se decide valor a enviar
-          }
-        }
+          type: ctx.type,
+        },
     }
       try {
         await axios.post(loggerEP, logRequest)

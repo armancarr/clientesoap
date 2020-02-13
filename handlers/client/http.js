@@ -35,6 +35,7 @@ function HttpClientHandler() {}
         ctx.error = error
       } else {
         ctx.statusCode = response.statusCode
+        ctx.StatusMessage = response.statusMessage
       }
       callback(ctx)
     }
