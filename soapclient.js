@@ -6,6 +6,7 @@ const Signature = require('./handlers/client/security/signature.js').Signature
 const Security = require('./handlers/client/security/security.js').SecurityClientHandler
 const axios = require('axios')
 const Mtom = require('./handlers/client/mtom/mtom.js').MtomClientHandler
+const addAttachment = require('./').addAttachment
 
 class SoapClient {
     // ..and an (optional) custom class constructor. If one is
@@ -43,6 +44,9 @@ class SoapClient {
 
     getSecurity(){
         return this.security
+    }
+    getMtom(){
+      return this.Mtom
     }
  
     call (ctx,pCtx, logger) 
@@ -161,6 +165,17 @@ class SoapClient {
       } catch (error) {
         logger.error(`ClienteSoap:call:logger error: ${error.message}`)
       }
+    }
+
+    addAttach (ctx, property, xpath, file, contentType){
+      return new Promise((resolve,reject)=> {
+        try{
+        addAttachment(ctx,property,xpath,file,contentType)
+        resolve()
+      }catch(error){
+        reject(error)
+      }  
+      })
     }
   }
 exports.SoapClient=SoapClient
