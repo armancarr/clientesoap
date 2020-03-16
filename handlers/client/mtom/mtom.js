@@ -45,10 +45,12 @@ MtomClientHandler.prototype.send = function(ctx, callback) {
       'http://www.w3.org/2004/08/xop/include',
       'xop:Include'
     )
-    elem.firstChild.setAttribute(
-      'xmlns:xop',
-      'http://www.w3.org/2004/08/xop/include'
-    )
+    if(i>0){
+      elem.firstChild.setAttribute(
+        'xmlns:xop',
+        'http://www.w3.org/2004/08/xop/include'
+      )
+    }
     elem.firstChild.setAttribute('href', 'cid:' + id)
   }
 
