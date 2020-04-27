@@ -7,6 +7,7 @@ const Security = require('./handlers/client/security/security.js').SecurityClien
 const axios = require('axios')
 const Mtom = require('./handlers/client/mtom/mtom.js').MtomClientHandler
 const addAttachment = require('./').addAttachment
+const DOMParser = require('xmldom').DOMParser;
 
 class SoapClient {
     // ..and an (optional) custom class constructor. If one is
@@ -81,9 +82,20 @@ class SoapClient {
              }
             }
             if (shouldLog) {
-              logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
-                resolve(resctx.response)
-              })
+                // Validacion para verificar si viene el array aXpath
+                if (pCtx.aXpath && Array.isArray(pCtx.aXpath)){
+                  // Logica para reemplazo de cada valor que trae el array 
+                  pCtx.aXpath.forEach(element => {
+                    resctx.xmlResponse = this.reemplazar(element,resctx.xmlResponse)
+                  });
+                  logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
+                    resolve(resctx.response)
+                  })
+                }else{
+                  logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
+                    resolve(resctx.response)
+                  })
+                }
             } else {
               resolve(resctx.response)
             }
@@ -176,6 +188,27 @@ class SoapClient {
         reject(error)
       }  
       })
+    }
+
+    reemplazar(aXpath,xmlResponse){
+      try{
+        var parser = new DOMParser();
+        const newXml = parser.parseFromString(xmlResponse, 'text/xml');
+        const tagToReplace = newXml.getElementsByTagName(aXpath.tag)[aXpath.occurrence]
+        
+        if(tagToReplace === undefined || tagToReplace === null){return xmlResponse} 
+        const nameTag = newXml.createElement(aXpath.tag);
+        const valueTag = newXml.createTextNode(aXpath.value);
+        nameTag.appendChild(valueTag);
+
+        newXml.replaceChild(nameTag, tagToReplace);
+        
+        return newXml.toString()
+        
+      }catch(error){
+        logger.error(error)
+      }     
+    
     }
   }
 exports.SoapClient=SoapClient
