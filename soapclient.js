@@ -86,7 +86,7 @@ class SoapClient {
                 if (pCtx.aXpath && Array.isArray(pCtx.aXpath)){
                   // Logica para reemplazo de cada valor que trae el array 
                   pCtx.aXpath.forEach(element => {
-                    resctx.xmlResponse = this.reemplazar(element,resctx.xmlResponse)
+                    resctx.xmlResponse = this.reemplazar(element,resctx.xmlResponse, logger)
                   });
                   logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
                     resolve(resctx.response)
@@ -190,18 +190,14 @@ class SoapClient {
       })
     }
 
-    reemplazar(aXpath,xmlResponse){
+    reemplazar(aXpath, xmlResponse, logger){
       try{
         var parser = new DOMParser();
         const newXml = parser.parseFromString(xmlResponse, 'text/xml');
         const tagToReplace = newXml.getElementsByTagName(aXpath.tag)[aXpath.occurrence]
-        
         if(tagToReplace === undefined || tagToReplace === null){return xmlResponse} 
-        const nameTag = newXml.createElement(aXpath.tag);
         const valueTag = newXml.createTextNode(aXpath.value);
-        nameTag.appendChild(valueTag);
-
-        newXml.replaceChild(nameTag, tagToReplace);
+        tagToReplace.replaceChild(valueTag, tagToReplace.childNodes[0])
         
         return newXml.toString()
         
