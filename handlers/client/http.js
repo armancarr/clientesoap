@@ -18,6 +18,7 @@ function HttpClientHandler() {}
         SOAPAction: ctx.action,
         'Content-Type': ctx.contentType,
         'MIME-Version': '1.0',
+        ...ctx.headers,
       },
       encoding: null,
       rejectUnauthorized: false,
