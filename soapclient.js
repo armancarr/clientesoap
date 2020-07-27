@@ -206,5 +206,20 @@ class SoapClient {
       }     
     
     }
+
+    setCertificate (certificadoSOAP){
+      this.certificate ={
+        private: fs.readFileSync(certificadoSOAP.privKey).toString(),
+        public: fs.readFileSync(certificadoSOAP.pubKey).toString()
+      }
+      const x509 = new X509BinarySecurityToken({
+        key: `${this.certificate.private}\n${this.certificate.public}`,
+      })
+      const signature = new Signature(x509)
+      signature.addReference("//*[local-name(.)='Body']")
+      signature.addReference("//*[local-name(.)='Timestamp']")
+      this.security = new Security({}, [x509, signature])
+    }
+
   }
 exports.SoapClient=SoapClient
