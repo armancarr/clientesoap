@@ -108,7 +108,7 @@ class SoapClient {
                     opData.status
                   }: Ctx=${JSON.stringify(
                     pCtx
-                  )} - Request=${this.request?this.request:resctx.request} - Response=${resctx.xmlResponse}`
+                  )} - Request=${this.request?this.request:resctx.request} - Response=${resctx.xmlResponse?resctx.xmlResponse:resctx.error}`
                 )
              }
             }
