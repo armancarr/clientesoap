@@ -52,77 +52,83 @@ class SoapClient {
  
     call (ctx,pCtx, logger) 
     {
-      return new Promise((resolve, reject) => {
-        const newctx = {
-            ...ctx,
-          contentType: 'text/xml',
-          cert: this.certificate.public,
-          key: this.certificate.private,
-        } 
-        const shouldLog = this.options.log
-        const logOperation = this.log
-        const debug = this.options.debug
-        const loggerEndPoint = this.options.loggerEndPoint
-        const opData = {
-          date: new Date().toISOString(),
-          status: 'OK',
-        } 
-        
-        send(this.handlers, newctx, (resctx) => {
-          if (resctx.statusCode === 200) {
-            if (debug) {
-              if (logger){
-                logger.debug(
-                  `ClienteSoap:call:send:${
-                    opData.status
-                  }: Ctx=${JSON.stringify(
-                    pCtx
-                  )} - Request=${this.request?this.request:resctx.request} - Response=${resctx.xmlResponse}`
-                )
-             }
-            }
-            if (shouldLog) {
-                // Validacion para verificar si viene el array aXpath
-                if (pCtx.aXpath && Array.isArray(pCtx.aXpath)){
-                  // Logica para reemplazo de cada valor que trae el array 
-                  pCtx.aXpath.forEach(element => {
-                    resctx.xmlResponse = this.reemplazar(element,resctx.xmlResponse, logger)
-                  });
-                  logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
-                    resolve(resctx.response)
-                  })
-                }else{
-                  logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
-                    resolve(resctx.response)
-                  })
-                }
+      try{
+        return new Promise((resolve, reject) => {
+          const newctx = {
+              ...ctx,
+            contentType: 'text/xml',
+            cert: this.certificate.public,
+            key: this.certificate.private,
+          } 
+          const shouldLog = this.options.log
+          const logOperation = this.log
+          const debug = this.options.debug
+          const loggerEndPoint = this.options.loggerEndPoint
+          const opData = {
+            date: new Date().toISOString(),
+            status: 'OK',
+          } 
+          
+          send(this.handlers, newctx, (resctx) => {
+            if (resctx.statusCode === 200) {
+              if (debug) {
+                if (logger){
+                  logger.debug(
+                    `ClienteSoap:call:send:${
+                      opData.status
+                    }: Ctx=${JSON.stringify(
+                      pCtx
+                    )} - Request=${this.request?this.request:resctx.request} - Response=${resctx.xmlResponse}`
+                  )
+               }
+              }
+              if (shouldLog) {
+                  // Validacion para verificar si viene el array aXpath
+                  if (pCtx.aXpath && Array.isArray(pCtx.aXpath)){
+                    // Logica para reemplazo de cada valor que trae el array 
+                    pCtx.aXpath.forEach(element => {
+                      resctx.xmlResponse = this.reemplazar(element,resctx.xmlResponse, logger)
+                    });
+                    logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
+                      resolve(resctx.response)
+                    })
+                  }else{
+                    logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
+                      resolve(resctx.response)
+                    })
+                  }
+              } else {
+                resolve(resctx.response)
+              }
             } else {
-              resolve(resctx.response)
-            }
-          } else {
-            opData.status='ERROR'
-            if (debug) {
-              if (logger){
-                logger.debug(
-                  `ClienteSoap:call:send:${
-                    opData.status
-                  }: Ctx=${JSON.stringify(
-                    pCtx
-                  )} - Request=${this.request?this.request:resctx.request} - Response=${resctx.xmlResponse?resctx.xmlResponse:resctx.error}`
-                )
-             }
-            }
-            if (shouldLog) {
-              
-              logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
+              opData.status='ERROR'
+              if (debug) {
+                if (logger){
+                  logger.debug(
+                    `ClienteSoap:call:send:${
+                      opData.status
+                    }: Ctx=${JSON.stringify(
+                      pCtx
+                    )} - Request=${this.request?this.request:resctx.request} - Response=${resctx.xmlResponse?resctx.xmlResponse:resctx.error}`
+                  )
+               }
+              }
+              if (shouldLog) {
+                
+                logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
+                  reject(resctx.response)
+                })
+              } else {
                 reject(resctx.response)
-              })
-            } else {
-              reject(resctx.response)
+              }
             }
-          }
+          })
         })
-      })
+      }catch(error){
+        console.log("Exception clientesoap:",error)
+        throw new Error(error.message)
+      }
+
     }
     async log(
       ctx,
