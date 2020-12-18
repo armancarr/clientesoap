@@ -78,7 +78,7 @@ class SoapClient {
                       opData.status
                     }: Ctx=${JSON.stringify(
                       pCtx
-                    )} - Request=${this.request?this.request:resctx.request} - Response=${resctx.xmlResponse}`
+                    )} - Request=${this.request?newctx.bodyData:resctx.request} - Response=${resctx.xmlResponse}`
                   )
                }
               }
@@ -89,11 +89,11 @@ class SoapClient {
                     pCtx.aXpath.forEach(element => {
                       resctx.xmlResponse = this.reemplazar(element,resctx.xmlResponse, logger)
                     });
-                    logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
+                    logOperation(pCtx, logger, opData, this.request?newctx.bodyData:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
                       resolve(resctx.response)
                     })
                   }else{
-                    logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
+                    logOperation(pCtx, logger, opData, this.request?newctx.bodyData:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
                       resolve(resctx.response)
                     })
                   }
@@ -109,13 +109,13 @@ class SoapClient {
                       opData.status
                     }: Ctx=${JSON.stringify(
                       pCtx
-                    )} - Request=${this.request?this.request:resctx.request} - Response=${resctx.xmlResponse?resctx.xmlResponse:resctx.error}`
+                    )} - Request=${this.request?newctx.bodyData:resctx.request} - Response=${resctx.xmlResponse?resctx.xmlResponse:resctx.error}`
                   )
                }
               }
               if (shouldLog) {
                 
-                logOperation(pCtx, logger, opData, this.request?this.request:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
+                logOperation(pCtx, logger, opData, this.request?newctx.bodyData:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
                   reject(resctx.response)
                 })
               } else {
