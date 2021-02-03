@@ -179,8 +179,12 @@ class SoapClient {
         },
     }
       try {
+        console.log('loggerEP: ', loggerEP)
+        console.log('logRequest: ', JSON.stringify(logRequest))
         await axios.post(loggerEP, logRequest)
       } catch (error) {
+        console.log(error)
+        console.log('serviceName: ', serviceName)
         logger.error(`ClienteSoap:call:logger error: ${error.message}`)
       }
     }
