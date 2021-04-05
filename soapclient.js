@@ -55,8 +55,8 @@ class SoapClient {
       try{
         return new Promise((resolve, reject) => {
           const newctx = {
-              ...ctx,
-            contentType: 'text/xml',
+            ...ctx,
+            contentType: pCtx.contentType ? pCtx.contentType: 'text/xml',
             cert: this.certificate.public,
             key: this.certificate.private,
           } 
