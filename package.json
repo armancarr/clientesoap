@@ -15,7 +15,7 @@
   "dependencies": {
     "axios": "^0.19.0",
     "dateformat": "^3.0.3",
-    "xml-crypto": "^1.4.0",
+    "xml-crypto": "^2.0.0",
     "xmldom": "^0.1.27",
     "formidable": "^1.2.1",
     "xpath": "0.0.27"
