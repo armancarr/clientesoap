@@ -8,6 +8,8 @@ const axios = require('axios')
 const Mtom = require('./handlers/client/mtom/mtom.js').MtomClientHandler
 const addAttachment = require('./').addAttachment
 const DOMParser = require('xmldom').DOMParser;
+const xmlenc = require("xml-encryption");
+xmlToObject = require('./parser').xmlToObject
 
 class SoapClient {
     // ..and an (optional) custom class constructor. If one is
@@ -59,6 +61,7 @@ class SoapClient {
             contentType: pCtx.contentType ? pCtx.contentType: 'text/xml',
             cert: this.certificate.public,
             key: this.certificate.private,
+            isEncrypted: pCtx.isEncrypted ? pCtx.isEncrypted : false,
           } 
           const shouldLog = this.options.log
           const logOperation = this.log
@@ -85,13 +88,27 @@ class SoapClient {
               if (shouldLog) {
                   // Validacion para verificar si viene el array aXpath
                   if (pCtx.aXpath && Array.isArray(pCtx.aXpath)){
-                    // Logica para reemplazo de cada valor que trae el array 
-                    pCtx.aXpath.forEach(element => {
-                      resctx.xmlResponse = this.reemplazar(element,resctx.xmlResponse, logger)
-                    });
-                    logOperation(pCtx, logger, opData, this.request?newctx.bodyData:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
-                      resolve(resctx.response)
-                    })
+                    if (resctx.isEncrypted) {  // si viene encriptado                    
+                      // Logica para reemplazo de cada valor que trae el array 
+                      pCtx.aXpath.forEach(element => {
+                        element.value = this.decryption(resctx.xmlResponse, pCtx.keyEncrypted)
+                        resctx.xmlResponse = this.reemplazar(element,resctx.xmlResponse, logger)
+                        resctx.xmlResponse = resctx.xmlResponse.replace(/&lt;/g, "<");
+                        resctx.response = xmlToObject(resctx.xmlResponse)
+                      });
+                      logOperation(pCtx, logger, opData, this.request?newctx.bodyData:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
+                        resolve(resctx.response)
+                      })
+                    }else{
+                      // Logica para reemplazo de cada valor que trae el array 
+                      pCtx.aXpath.forEach(element => {
+                          resctx.xmlResponse = this.reemplazar(element,resctx.xmlResponse, logger)
+                      });
+                      logOperation(pCtx, logger, opData, this.request?newctx.bodyData:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
+                        resolve(resctx.response)
+                      })
+                    }
+                    
                   }else{
                     logOperation(pCtx, logger, opData, this.request?newctx.bodyData:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
                       resolve(resctx.response)
@@ -215,6 +232,20 @@ class SoapClient {
         logger.error(error)
       }     
     
+    }
+
+    decryption(xmlResponse, key){
+      const keyFile = fs.readFileSync(key).toString();
+      const options = {
+        key: keyFile,
+        disallowDecryptionWithInsecureAlgorithm: false,
+        warnInsecureAlgorithm: false,
+      };
+      const xmlDecrypted =  xmlenc.decrypt(xmlResponse, options, function (err, result) {
+        if (err) throw new Error(err);      
+        return result;
+      });
+      return xmlDecrypted;
     }
 
     setCertificate (certificadoSOAP){
