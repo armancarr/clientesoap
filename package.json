@@ -13,12 +13,12 @@
   "author": "Armando Carrillo",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "dateformat": "^3.0.3",
     "formidable": "^1.2.1",
-    "xml-crypto": "^1.4.0",
+    "xml-crypto": "^2.0.0",
     "xml-encryption": "^1.2.4",
-    "xmldom": "^0.1.27",
+    "xmldom": "^0.5.0",
     "xpath": "0.0.27"
   },
   "devDependencies": {
