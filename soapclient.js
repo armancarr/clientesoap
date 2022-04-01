@@ -62,6 +62,7 @@ class SoapClient {
             cert: this.certificate.public,
             key: this.certificate.private,
             isEncrypted: pCtx.isEncrypted ? pCtx.isEncrypted : false,
+            enableAllResponse:pCtx.enableAllResponse ? pCtx.enableAllResponse : false,
           } 
           const shouldLog = this.options.log
           const logOperation = this.log
@@ -105,13 +106,13 @@ class SoapClient {
                           resctx.xmlResponse = this.reemplazar(element,resctx.xmlResponse, logger)
                       });
                       logOperation(pCtx, logger, opData, this.request?newctx.bodyData:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
-                        resolve(resctx.response)
+                          resolve(resctx.enableAllResponse?resctx:resctx.response)
                       })
                     }
                     
                   }else{
                     logOperation(pCtx, logger, opData, this.request?newctx.bodyData:resctx.request, resctx.xmlResponse,ctx.serviceName,loggerEndPoint,resctx.statusCode,resctx.statusMessage).then(() => {
-                      resolve(resctx.response)
+                      resolve(resctx.enableAllResponse?resctx:resctx.response)
                     })
                   }
               } else {
